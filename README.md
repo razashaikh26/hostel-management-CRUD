@@ -7,6 +7,15 @@ A comprehensive REST API for managing hostel operations built with FastAPI, feat
 **📚 Interactive Docs**: http://13.204.77.154:8000/docs  
 **📋 OpenAPI Schema**: http://13.204.77.154:8000/openapi.json
 
+admin Credentials :
+
+raza
+123456789
+
+{
+  "username": "raza",
+  "password": "123456789"
+}
 ## ✨ Features
 
 - **Role-Based Authentication**: Admin, Student, and Warden roles with JWT tokens
