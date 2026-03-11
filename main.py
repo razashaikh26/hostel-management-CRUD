@@ -22,11 +22,14 @@ def login( data : Login):
         (username,)
     )
     user = cur.fetchone()
+
     if user is None:
         raise HTTPException(status_code=401, detail="No user found")
     user_id, db_username, db_password, db_role = user
+
     if db_password != password:
         raise HTTPException(status_code=401, detail="Invalid password")
+    
     token = jwt.encode(
         {"id": user_id, "username": db_username, "role": db_role},
         security_key,
@@ -108,8 +111,7 @@ def add_room(room: dict, user=Depends(getuser)):
         raise HTTPException(status_code=400, detail="Missing required field: room_number")
     if "capacity" not in room:
         raise HTTPException(status_code=400, detail="Missing required field: capacity")
-    
-    # Validate capacity is positive integer
+
     try:
         capacity = int(room["capacity"])
         if capacity <= 0:
@@ -119,7 +121,6 @@ def add_room(room: dict, user=Depends(getuser)):
     
     cur = connect.cursor()
     
-    # Check if room number already exists
     cur.execute("SELECT * FROM rooms WHERE room_number=%s", (room["room_number"],))
     existing = cur.fetchone()
     if existing:
@@ -165,13 +166,11 @@ def request_room(data: dict, user=Depends(getuser)):
     if user["role"] != "student":
         raise HTTPException(status_code=401)
     
-    # Validate required field
     if "room_id" not in data:
         raise HTTPException(status_code=400, detail="Missing required field: room_id")
     
     cur = connect.cursor()
-    
-    # Check if room exists and is available
+
     cur.execute("SELECT * FROM rooms WHERE id=%s AND status='available'", (data["room_id"],))
     room = cur.fetchone()
     if not room:
